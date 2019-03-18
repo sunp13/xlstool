@@ -26,17 +26,22 @@ func OpenFile(fileName string, sheetIndex ...int) (data []map[string]string, err
 
 	for i, row := range sheet.Rows {
 		data := make(map[string]string, 0)
-		// 行号
-		data["_index"] = fmt.Sprintf("%d", i+1)
+		data["_rn"] = fmt.Sprintf("%d", i+1)
+		dataEmpty := ""
 		for j, cell := range row.Cells {
 			if i == 0 {
 				sheetTitle = append(sheetTitle, cell.String())
 			} else {
-				// 判断一下cell.type
-				data[sheetTitle[j]] = fmt.Sprintf("%v", cell.Value)
+				if j >= len(sheetTitle) {
+					continue
+				}
+				data[sheetTitle[j]] = cell.String()
+				dataEmpty += cell.String()
 			}
 		}
-		sheetRows = append(sheetRows, data)
+		if dataEmpty != "" {
+			sheetRows = append(sheetRows, data)
+		}
 	}
 	return sheetRows, nil
 }
